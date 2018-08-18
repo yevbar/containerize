@@ -1,16 +1,19 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"time"
+	"log"
+	"os"
 	"strconv"
+	"strings"
+	"time"
+
 	"github.com/MarinX/keylogger"
 	"github.com/go-vgo/robotgo"
 )
 
 func dockerize(counter int, command string, lazyRecursion int) {
-	if(counter < 1) {
+	if counter < 1 {
 		robotgo.TypeString(command)
 		robotgo.KeyTap("enter")
 		return
@@ -19,12 +22,12 @@ func dockerize(counter int, command string, lazyRecursion int) {
 	robotgo.KeyTap("enter")
 	marker := 0
 	timeWait := 0
-	if(lazyRecursion - counter) == 1 {
+	if lazyRecursion-counter == 1 {
 		timeWait = 5
 	} else {
 		timeWait = 24
 	}
-	for(marker < timeWait) {
+	for marker < timeWait {
 		time.Sleep(time.Second)
 		marker += 1
 		fmt.Println("Slept for " + strconv.Itoa(marker) + " seconds")
@@ -32,9 +35,8 @@ func dockerize(counter int, command string, lazyRecursion int) {
 	dockerize(counter-1, command, lazyRecursion)
 }
 
-
 func main() {
-	if(len(os.Args) < 3) {
+	if len(os.Args) < 3 {
 		fmt.Println("Usage: ./containerize NUMBER COMMAND [rest of COMMAND]")
 		return
 	}
@@ -69,9 +71,9 @@ func main() {
 
 		//we only need keypress
 		if i.Type == keylogger.EV_KEY {
-			if (i.KeyString() == "L_CTRL") {
+			if i.KeyString() == "L_CTRL" {
 				time.Sleep(time.Second)
-				dockerize(numberIterations,finalCommand,numberIterations+1)
+				dockerize(numberIterations, finalCommand, numberIterations+1)
 				return
 			}
 		}
