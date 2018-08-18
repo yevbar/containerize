@@ -18,7 +18,7 @@ func dockerize(counter int, command string, lazyRecursion int) {
 		robotgo.KeyTap("enter")
 		return
 	}
-	robotgo.TypeString("docker run --name blabl --privileged --network=\"host\" -it jpetazzo/dind")
+	robotgo.TypeString(`docker run --name blabl --privileged --network="host" -it jpetazzo/dind`)
 	robotgo.KeyTap("enter")
 	marker := 0
 	timeWait := 0
@@ -30,7 +30,7 @@ func dockerize(counter int, command string, lazyRecursion int) {
 	for marker < timeWait {
 		time.Sleep(time.Second)
 		marker += 1
-		fmt.Println("Slept for " + strconv.Itoa(marker) + " seconds")
+		fmt.Println("Slept for", marker, "seconds")
 	}
 	dockerize(counter-1, command, lazyRecursion)
 }
@@ -42,17 +42,13 @@ func main() {
 	}
 	devs, err := keylogger.NewDevices()
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
-	restOfArgs := os.Args[2:]
-	firstArg := os.Args[1]
-	numberIterations, err := strconv.Atoi(firstArg)
-	finalCommand := ""
-	for _, command := range restOfArgs {
-		finalCommand += command
-		finalCommand += " "
+	numberIterations, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
 	}
+	finalCommand := strings.Join(os.Args[2:], " ")
 
 	for _, val := range devs {
 		fmt.Println("Id->", val.Id, "Device->", val.Name)
@@ -63,8 +59,7 @@ func main() {
 
 	in, err := rd.Read()
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal(err)
 	}
 
 	for i := range in {
